@@ -43,7 +43,7 @@ const NavItem = ({
 
       {isOpen ? (
         <div
-          onClick={() => close()}
+          onClick={() => {}}
           className={cn(
             'absolute inset-x-0 top-full text-sm text-muted-foreground',
             {
@@ -62,7 +62,7 @@ const NavItem = ({
                 <div className='col-span-4 col-start-1 grid grid-cols-3 gap-x-8'>
                   {category.featured.map((item) => (
                     <div
-                      onClick={() => close}
+                      onClick={() => {}}
                       key={item.name}
                       className='group relative text-base sm:text-sm'>
                       <div className='relative aspect-video overflow-hidden rounded-lg bg-gray-100 group-hover:opacity-75'>

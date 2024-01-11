@@ -44,10 +44,6 @@ export default function Home() {
             <Link href={'/products'} className={buttonVariants()}>Brows Trending</Link>
             <Button variant='ghost'>Our auality promise &rarr;</Button>
           </div>
-          <div className="relative">
-
-            <Image className="relative"  alt="add" src={'/nav/blu.jpg'} fill/>
-          </div>
         </div>
       </MaxWidthWrapper>
 
