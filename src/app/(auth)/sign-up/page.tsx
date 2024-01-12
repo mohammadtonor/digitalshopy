@@ -10,17 +10,11 @@ import { cn } from "../../../lib/utils";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { AuthCredentialValidator, TAuthCredentialValidator } from "../../../lib/validators/account-credentials-validator";
+import { trpc } from "@/trpc/client";
 
 const page = () => {
-  const AuthCredentialValidator = z.object({
-    email: z.string().email(),
-    password: z.string().min(8, {
-      message: "Password must be at least 8 characters long.",
-    }),
-  });
-
-  type TAuthCredentialValidator = z.infer<typeof AuthCredentialValidator>;
-
+  
   const {
     register,
     handleSubmit,
@@ -29,7 +23,14 @@ const page = () => {
     resolver: zodResolver(AuthCredentialValidator),
   });
     
-    const
+  const { mutate, isLoading } = trpc.auth.createPayloadUser.useMutation({});
+
+    const onSubmitHandler = ({
+        email, 
+        password,
+    }: TAuthCredentialValidator) => {
+        mutate({email, password})
+    }
 
   return (
     <>
@@ -66,6 +67,7 @@ const page = () => {
                 <div className="grid gap-1 py-2">
                   <Label htmlFor="password">Password</Label>
                   <Input
+                    type="password"
                     {...register("password")}
                     className={cn({
                       "focus-visible:ring-red-500": errors.password,
