@@ -9,15 +9,18 @@ import { Input } from "../../../components/ui/input";
 import { cn } from "../../../lib/utils";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ZodError, z } from "zod";
 import { AuthCredentialValidator, TAuthCredentialValidator } from "../../../lib/validators/account-credentials-validator";
 import { trpc } from "@/trpc/client";
 import { toast } from 'sonner';
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 
 const page = () => {
-  const router = useRouter();
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const isSaller = searchParams.get('as') === 'saller';
+    const origin = searchParams.get('origin');
+
   const {
     register,
     handleSubmit,
@@ -26,36 +29,45 @@ const page = () => {
     resolver: zodResolver(AuthCredentialValidator),
   });
     
-  const { mutate, isLoading } =
-    trpc.auth.createPayloadUser.useMutation({
-      onError: (err) => {
-        if (err.data?.code === "CONFLICT") {
-          toast.error(
-            'This email already in use. sign in instad?'
-          )
+  const { mutate: signIn, isLoading } =
+    trpc.auth.signIn.useMutation({
+        onSuccess: () => {
+            toast.success('Signed in successfully!');
+            
+            router.refresh();
 
-          return
+            if (origin) {
+                router.push(`/${origin}`);
+                return;
+            }
+
+            if (isSaller) {
+                router.push('/seller');
+                return;
+            }
+
+            router.push('/')
+        },
+        onError: (err) => {
+            if (err.data?.code === "UNAUTHORIZED") {
+                toast.error('Invalid email or password');
+            }
         }
-
-        if (err instanceof ZodError) {
-          toast.error(err.issues[0].message);
-          
-          return
-        }
-
-        toast.error('Somthing went wrong. Please try again.')
-      },
-      onSuccess: ({sentToEmail}) => {
-        toast.success(`Verification email to ${sentToEmail}`)
-        router.push('/verify-email?to=' + sentToEmail);
-      }
     });
 
     const onSubmitHandler = ({
         email, 
         password,
     }: TAuthCredentialValidator) => {
-        mutate({email, password})
+        signIn({email, password})
+    }
+
+    const continueAsSaller = () => {
+        router.push('?as=saller');
+    }
+
+    const continueAsBuyer = () => {
+        router.replace('/sign-in', undefined);
     }
 
   return (
@@ -64,15 +76,18 @@ const page = () => {
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col items-center space-y-2 text-center">
             <Icons.logo className="h-20 w-20" />
-            <h1 className="text-2xl font-bold">Create an account</h1>
+                      <h1 className="text-2xl font-bold">
+                          sign in to your {isSaller ? 'saller' : ''}{' '}
+                          account
+                      </h1>
 
             <Link
               className={buttonVariants({
                 variant: "link",
                 className: "gap-1.5",
               })}
-              href="/sign-in">
-              Already have an account? Sign in
+              href="/sign-up">
+              Don&apos;t have an account?
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -112,9 +127,36 @@ const page = () => {
                   )}
                 </div>
 
-                <Button>Sign up</Button>
+                <Button>Sign in</Button>
               </div>
             </form>
+                <div className="relative">
+                    <div
+                        aria-hidden='true'
+                        className="absolute inset-0 flex item-center">
+                        <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">
+                            or
+                        </span>
+                    </div>
+                </div>          
+                      {isSaller ? (   
+                          <Button
+                              variant='secondary'
+                              disabled={isLoading}
+                              onClick={continueAsBuyer}
+                          >Continue as buyer
+                          </Button>
+                      ) : (
+                        <Button
+                            variant='secondary'
+                            disabled={isLoading}      
+                            onClick={continueAsSaller}>
+                            Continu as saller
+                        </Button>
+                  )}
           </div>
         </div>
       </div>
