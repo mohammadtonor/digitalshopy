@@ -5,7 +5,7 @@ export const PRODUCT_CATEGORIES = [
         featured: [
             {
                 name: "Eitor picks",
-                href: '#',
+                href: '/',
                 imageSrc: '/nav/ui-kits/mixed.jpg'
             },
             {
@@ -22,7 +22,7 @@ export const PRODUCT_CATEGORIES = [
     },
     {
         label: "Icons",
-        Value: 'icons' as const,
+        value: 'icons' as const,
         featured: [
             {
                 name: "favorites Icon Pickes",
@@ -39,6 +39,6 @@ export const PRODUCT_CATEGORIES = [
                 href: '#',
                 imageSrc: '/nav/icons/bestsellers.jpg'
             },
-        ]
-    }
+        ],
+    },
 ];
