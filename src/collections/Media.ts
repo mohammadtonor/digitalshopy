@@ -44,7 +44,7 @@ export const Media: CollectionConfig = {
     },
     upload: {
         staticURL: '/media',
-        staticDir: "/media",
+        staticDir: "media",
         imageSizes: [
             {
                 name: 'thumbnails',
