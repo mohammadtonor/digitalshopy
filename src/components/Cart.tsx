@@ -1,3 +1,5 @@
+'use client'
+
 import { ShoppingCart } from "lucide-react";
 import {
     Sheet,
@@ -12,27 +14,56 @@ import { formatPrice } from "../lib/utils";
 import Link from "next/link";
 import { buttonVariants } from "./ui/button";
 import Image from "next/image";
+import { useCart } from "../hooks/use-cart";
+import { useEffect, useState } from "react";
+import { ScrollArea } from "./ui/scroll-area";
+import { CartItem } from "./CartItem";
 
 export const Cart = () => {
+    const { items, clearCart } = useCart();
+    const itemCount = items.length;
 
-    const itemCount = 0;
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => { 
+        setIsMounted(true)
+    }, []);
+
+    const cartTotal = items.reduce(
+        (total, { product }) => {
+            console.log(product);
+            
+            return total + product.price
+        },
+        0
+      )
+    
     const fee = 1;
+
+    if (!isMounted) {
+            return null
+    }
+
     return (
         <Sheet>
             <SheetTrigger className="group -m-2 flex items-center ">
                 <ShoppingCart className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500" />
                 <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800 ">
-                    0
+                    {itemCount}
                 </span>
             </SheetTrigger>
             <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
                 <SheetHeader>
-                    <SheetTitle>Cart (0)</SheetTitle>
+                    <SheetTitle>Cart ({itemCount})</SheetTitle>
                 </SheetHeader>
                 {itemCount > 0 ? (
                     <>
                         <div className="flex w-full flex-col pr-6">
-                            cart item
+                            <ScrollArea>
+                                {items.map(({product}) => (
+                                    <CartItem key={product.id} product={product} />
+                                ))}
+                            </ScrollArea>
                         </div>    
                         <div className="space-y-4 pr-6">
                             <Separator />
@@ -47,7 +78,7 @@ export const Cart = () => {
                                 </div>
                                 <div className="flex">
                                     <span className="flex-1">Total</span>
-                                    <span>{formatPrice(1)}</span>
+                                    {cartTotal && <span>{formatPrice(cartTotal + fee)}</span>}
                                 </div>
                             </div>
 
