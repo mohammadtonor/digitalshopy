@@ -104,9 +104,9 @@ export interface Media {
 }
 export interface Order {
   id: string;
-  isPaid: boolean;
+  _isPaid: boolean;
   user: string | User;
-  projects: (string | Product)[];
+  products: (string | Product)[];
   updatedAt: string;
   createdAt: string;
 }

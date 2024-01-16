@@ -82,7 +82,7 @@ export const ImageSlider = ({ urls }: ImageSliderProps) => {
           <SwiperSlide key={i} className="">
             <Image
               fill
-              loading="lazy"
+              loading="eager"
               className="z-10 h-full w-full object-cover object-center"
               src={url}
               alt="Product image"

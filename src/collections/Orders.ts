@@ -24,7 +24,7 @@ export const Orders: CollectionConfig = {
   },
   fields: [
     {
-      name: "isPaid",
+      name: "_isPaid",
       type: "checkbox",
       access: {
         read: ({ req }) => req.user.role === "admin",
@@ -46,7 +46,7 @@ export const Orders: CollectionConfig = {
       required: true,
     },
     {
-      name: "projects",
+      name: "products",
       type: "relationship",
       relationTo: "products",
       required: true,
