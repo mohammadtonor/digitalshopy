@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 import { useRouter } from "next/navigation";
 
 
-const page = () => {
+const SignUpPage = () => {
   const router = useRouter();
   const {
     register,
@@ -122,4 +122,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default SignUpPage;

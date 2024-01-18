@@ -33,12 +33,14 @@ export const paymentRouter = router({
                 collection: 'orders',
                 data: {
                     _isPaid: false,
-                    products: filteredProducts,
+                    products: filteredProducts.map(prod => prod.id),
                     user: user.id
 
                 }
             })
 
+            const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = []
+            
             filteredProducts.forEach((product) => {
                 line_items.push({
                     price: product.priceId!,
@@ -46,7 +48,6 @@ export const paymentRouter = router({
                 })
             })
             
-            const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = []
 
             line_items.push({
                 price: "price_1OZKH3IyQ2yQ2GQVoz1GxyT7",
@@ -54,20 +55,20 @@ export const paymentRouter = router({
                 adjustable_quantity: {
                     enabled: false,
                 }
-            })
+            })            
 
             try {
                 const stripeSession = await stripe.checkout.sessions.create({
                     success_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/thank-you?orderId=${order.id}`,
                     cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/cart`,
-                    payment_method_types: ["card", 'paynow'],
+                    payment_method_types: ["card", 'paypal'],
                     mode: 'payment',
                     metadata: {
                         userId: user.id,
                         orderId: order.id
                     },
-                    line_items: line_items
-                })
+                    line_items,
+                })                
                 
                 return {url: stripeSession.url}
             } catch (err) {
@@ -75,5 +76,29 @@ export const paymentRouter = router({
                 
                 return {url: null}
             }
-        })
+        }),
+    pollOrderStatus: privateProcedure
+        .input(z.object({ orderId: z.string() }))
+        .query( async ({ input }) => {
+            const { orderId } = input
+            
+            const payload = await getPayloadClient()
+
+            const { docs: orders } = await payload.find({
+                collection: 'orders',
+                where: {
+                  id: {
+                    equals: orderId,
+                  },
+                },
+              })
+
+            if (!orders.length) {
+                throw new TRPCError({ code: 'NOT_FOUND' });
+            }
+
+            const [order] = orders
+
+            return { isPaid: order._isPaid }
+        }),
 });

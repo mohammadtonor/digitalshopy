@@ -33,7 +33,7 @@ const Paage = () => {
         (total, { product }) => total + product.price,
     0);
     
-    const fee = 0;
+    const fee = 1;
     
     return ( 
         <div className="bg-white">
@@ -188,7 +188,7 @@ const Paage = () => {
 
                         <div className="mt-6">
                             <Button
-                                disabled={items.length === 0 || isLoading}
+                                disabled={items.length === 0 || (isMounted &&  isLoading)}
                                 onClick={() => createCheckoutSession({productIds})}
                                 className="w-full" size='lg'>
                                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-1.5"/> : null}

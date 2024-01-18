@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 import { useRouter, useSearchParams } from "next/navigation";
 
 
-const page = () => {
+const SignInPage = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const isSaller = searchParams.get('as') === 'saller';
@@ -42,7 +42,7 @@ const page = () => {
             }
 
             if (isSaller) {
-                router.push('/seller');
+                router.push('/sell');
                 return;
             }
 
@@ -164,4 +164,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default SignInPage;

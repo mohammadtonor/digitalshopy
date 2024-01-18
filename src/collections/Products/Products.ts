@@ -4,10 +4,13 @@ import { BeforeChangeHook } from "payload/dist/collections/config/types";
 import { Product } from "../../payload.types";
 import { stripe } from "../../lib/stripe";
 
-const addUser: BeforeChangeHook<Product> = async ({ req, data }) => {
-    const user = req.user
+const addUser: BeforeChangeHook<Product> = async ({
+  req,
+  data,
+}) => {
+  const user = req.user
 
-    return {...data, user: user.id}
+  return { ...data, user: user.id }
 }
 
 export const Products: CollectionConfig = {
